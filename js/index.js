@@ -1,30 +1,110 @@
-$(function () {
+//初始化
+$("#danmu").danmu({
+    left:0,
+    top:0,
+    height:"100%",
+    width:"100%",
+    speed:20000,
+    opacity:1,
+    font_size_small:16,
+    font_size_big:24,
+    top_botton_danmu_time:6000
+});
+query();//  从后端获取弹幕并添加
 
-    $("danmu").danmu({
-        height: 360,  //弹幕区高度
-        width: 640,   //弹幕区宽度
-        zindex :100,   //弹幕区域z-index属性
-        speed:7000,      //滚动弹幕的默认速度，这是数值值得是弹幕滚过每672像素所需要的时间（毫秒）
-        sumTime:65535,   //弹幕流的总时间
-        danmuLoop:false,   //是否循环播放弹幕
-        defaultFontColor:"#FFFFFF",   //弹幕的默认颜色
-        fontSizeSmall:16,     //小弹幕的字号大小
-        FontSizeBig:24,       //大弹幕的字号大小
-        opacity:"0.9",			//默认弹幕透明度
-        topBottonDanmuTime:6000,   // 顶部底部弹幕持续时间（毫秒）
-        SubtitleProtection:false,     //是否字幕保护
-        positionOptimize:false,         //是否位置优化，位置优化是指像AB站那样弹幕主要漂浮于区域上半部分
+//再添加三个弹幕
+$("#danmu").danmu("addDanmu",[
+    { text:"这是滚动弹幕" ,color:"white",size:1,position:0,time:2}
+    ,{ text:"这是顶部弹幕" ,color:"yellow" ,size:1,position:1,time:2}
+    ,{ text:"这是底部弹幕" , color:"red" ,size:1,position:2,time:2}
+]);
+//一个定时器，监视弹幕时间并更新到页面上
+function timedCount(){
+    $("#time").text($('#danmu').data("nowTime"));
 
-        maxCountInScreen: 40,   //屏幕上的最大的显示弹幕数目,弹幕数量过多时,优先加载最新的。
-        maxCountPerSec: 10      //每分秒钟最多的弹幕数目,弹幕数量过多时,优先加载最新的。
-    });
+    t=setTimeout("timedCount()",50)
 
-    $("#danmu").danmu("addDanmu",[
-        { text:"这是滚动弹幕" ,color:"white",size:1,position:0,time:2}
-        ,{ text:"这是顶部弹幕" ,color:"yellow" ,size:1,position:1,time:3}
-        ,{ text:"这是底部弹幕" , color:"red" ,size:1,position:2,time:3}
-    ])
+}
+timedCount();
 
+
+
+function starter(){
     $('#danmu').danmu('danmuStart');
+}
+function pauser(){
+    $('#danmu').danmu('danmuPause');
+}
+function resumer(){
+    $('#danmu').danmu('danmuResume');
+}
+function stoper(){
+    $('#danmu').danmu('danmuStop');
+}
+function getime(){
+    alert($('#danmu').data("nowTime"));
+}
+function getpaused(){
+    alert($('#danmu').data("paused"));
+}
+//添加弹幕测试  这个函数没有调用
+function add() {
+    var newd =
+        {"text": "new2", "color": "green", "size": "1", "position": "0", "time": 60};
+    $('#danmu').danmu("addDanmu", newd);
+}
+//向后端添加弹幕测试  这个函数没有调用
+function insert(){
+    var newd= { "text":"new2" , "color":"green" ,"size":"1","position":"0","time":50};
+    str_newd=JSON.stringify(newd);
+    $.post("stone.php",{danmu:str_newd},function(data,status){alert(data)});
+}
+//从后端获取到弹幕并添加
+function query() {
+    // $.get("query.php",function(data,status){
+    //     var danmu_from_sql=eval(data);
+    //     for (var i=0;i<danmu_from_sql.length;i++){
+    //         var danmu_ls=eval('('+danmu_from_sql[i]+')');
+    //         $('#danmu').danmu("addDanmu",danmu_ls);
+    //     }
+    // });
+}
 
-})
+function send(){
+    var text = document.getElementById('text').value;
+    var color = document.getElementById('color').value;
+    var position = document.getElementById('position').value;
+    var time = $('#danmu').data("nowTime")+1;
+    var size =document.getElementById('text_size').value;
+    var text_obj='{ "text":"'+text+'","color":"'+color+'","size":"'+size+'","position":"'+position+'","time":'+time+'}';
+    // 发送到后端
+
+    var text_obj='{ "text":"'+text+'","color":"'+color+'","size":"'+size+'","position":"'+position+'","time":'+time+',"isnew":""}';
+    var new_obj=eval('('+text_obj+')');
+    $('#danmu').danmu("addDanmu",new_obj);
+    document.getElementById('text').value='';
+}
+//调整透明度函数
+function op(){
+    var op=document.getElementById('op').value;
+    $('#danmu').danmu("setOpacity",op/100);
+}
+
+//调隐藏 显示
+function changehide() {
+    var op = document.getElementById('op').value;
+    op = op / 100;
+    if (document.getElementById("ishide").checked) {
+        $("#danmu").danmu("setOpacity",1)
+    } else {
+        $("#danmu").danmu("setOpacity",0)
+
+    }
+}
+
+//设置弹幕时间
+function settime(){
+    var t=document.getElementById("set_time").value;
+    t=parseInt(t)
+    $('#danmu').danmu("setTime",t);
+}
