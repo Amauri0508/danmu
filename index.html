@@ -3,22 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport"    content="width=device-width, initial-scale=1.0">
-  <title>jQuery.danmu.js  jQuery弹幕插件</title>
+  <title>基于 Swoole 的弹幕系统</title>
     <link rel="stylesheet" href="./css/index.css">
   <script src="./js/jquery-2.1.4.min.js"></script>
   <script src="./js/jquery.danmu.js"></script>
   <script src="./js/index.js"></script>
+  <script src="./js/ws.js"></script>
 </head>
 
 <body class="center">
-Demo<br><br>
+基于 Swoole 的弹幕系统<br><br>
 <!--黑背景和弹幕区-->
 <div id="danmuarea">
-  <div id="danmu" >
+  <div id="danmu">
   </div>
 </div>
 <!--控制区-->
-<div class="ctr" >
+<div class="ctr">
   <button type="button"  onclick="resumer() ">弹幕开始/继续</button>&nbsp;&nbsp;&nbsp;&nbsp;
   <button type="button"  onclick="pauser()">弹幕暂停</button>  &nbsp;&nbsp;&nbsp;&nbsp;
   显示弹幕:<input type='checkbox' checked='checked' id='ishide' value='is' onchange='changehide()'> &nbsp;&nbsp;&nbsp;&nbsp;
