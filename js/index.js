@@ -10,23 +10,12 @@ $("#danmu").danmu({
     font_size_big: 24,
     top_botton_danmu_time: 6000
 });
-query();//  从后端获取弹幕并添加
-
-//再添加三个弹幕
-$("#danmu").danmu("addDanmu", [
-    {text: "这是滚动弹幕", color: "white", size: 1, position: 0, time: 2}
-    , {text: "这是顶部弹幕", color: "yellow", size: 1, position: 1, time: 2}
-    , {text: "这是底部弹幕", color: "red", size: 1, position: 2, time: 2}
-]);
 
 //一个定时器，监视弹幕时间并更新到页面上
 function timedCount() {
     $("#time").text($('#danmu').data("nowTime"));
-
     t = setTimeout("timedCount()", 50)
-
 }
-
 timedCount();
 
 
@@ -54,32 +43,29 @@ function getpaused() {
     alert($('#danmu').data("paused"));
 }
 
-//添加弹幕测试  这个函数没有调用
-function add() {
-    var newd =
-        {"text": "new2", "color": "green", "size": "1", "position": "0", "time": 60};
+function add(newd) {
+    console.log(newd)
     $('#danmu').danmu("addDanmu", newd);
 }
 
-//向后端添加弹幕测试  这个函数没有调用
-function insert() {
-    var newd = {"text": "new2", "color": "green", "size": "1", "position": "0", "time": 50};
-    str_newd = JSON.stringify(newd);
-    $.post("stone.php", {danmu: str_newd}, function (data, status) {
-        alert(data)
-    });
-}
+var ws = new WebSocket("ws://127.0.0.1:9502");
 
-//从后端获取到弹幕并添加
-function query() {
-    // $.get("query.php",function(data,status){
-    //     var danmu_from_sql=eval(data);
-    //     for (var i=0;i<danmu_from_sql.length;i++){
-    //         var danmu_ls=eval('('+danmu_from_sql[i]+')');
-    //         $('#danmu').danmu("addDanmu",danmu_ls);
-    //     }
-    // });
-}
+ws.onopen = function(evt) {
+    console.log("Connection open ...");
+    ws.send("Hello server");
+};
+
+ws.onmessage = function(evt) {
+    var data = evt.data;
+    console.log( "Received Message: " + data);
+    add(data);
+
+};
+
+ws.onclose = function(evt) {
+    console.log("Connection closed.");
+};
+
 
 function send() {
     var text = document.getElementById('text').value;
@@ -89,6 +75,7 @@ function send() {
     var size = document.getElementById('text_size').value;
     var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + '}';
     // 发送到后端
+    ws.send(text_obj);
 
     var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + ',"isnew":""}';
     var new_obj = eval('(' + text_obj + ')');
