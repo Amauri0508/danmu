@@ -43,8 +43,8 @@ function getpaused() {
     alert($('#danmu').data("paused"));
 }
 
+
 function add(newd) {
-    console.log(newd)
     $('#danmu').danmu("addDanmu", newd);
 }
 
@@ -52,14 +52,12 @@ var ws = new WebSocket("ws://127.0.0.1:9502");
 
 ws.onopen = function(evt) {
     console.log("Connection open ...");
-    ws.send("Hello server");
 };
 
 ws.onmessage = function(evt) {
     var data = evt.data;
-    console.log( "Received Message: " + data);
-    add(data);
-
+    var data_obj = eval("(" + data + ")");
+    add(data_obj);
 };
 
 ws.onclose = function(evt) {
@@ -71,15 +69,11 @@ function send() {
     var text = document.getElementById('text').value;
     var color = document.getElementById('color').value;
     var position = document.getElementById('position').value;
-    var time = $('#danmu').data("nowTime") + 1;
+    var time = $('#danmu').data("nowTime") + 1;;
     var size = document.getElementById('text_size').value;
-    var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + '}';
+    var text_obj = '{"text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + '}';
     // 发送到后端
     ws.send(text_obj);
-
-    var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + ',"isnew":""}';
-    var new_obj = eval('(' + text_obj + ')');
-    $('#danmu').danmu("addDanmu", new_obj);
     document.getElementById('text').value = '';
 }
 
